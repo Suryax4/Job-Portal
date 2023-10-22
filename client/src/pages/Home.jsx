@@ -35,7 +35,7 @@ const Home = () => {
         <p className="text-center my-7 text-2xl">Something went wrong!</p>
       )}
       {jobs && jobs.length > 0 && !loading && !error && (
-        <div>
+        <div className="mb-4">
           <h1 className="text-center mt-7 text-2xl font-semibold">
             Job Listing
           </h1>
