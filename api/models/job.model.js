@@ -13,8 +13,8 @@ const jobSchema = new mongoose.Schema({
   description: String,
   requirements: [String],
   salary: String,
-  postedDate: Date,
-  applicationDeadline: Date,
+  postedDate: String,
+  applicationDeadline: String,
 });
 
 // Create a JobListing model from the schema
