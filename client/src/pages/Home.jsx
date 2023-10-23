@@ -10,7 +10,7 @@ const Home = () => {
   const fetchListing = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:3000/api/job/listing`);
+      const res = await fetch(`/api/job/listing`);
       const data = await res.json();
       if (data.success === false) {
         setError(true);

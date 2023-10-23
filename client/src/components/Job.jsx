@@ -27,10 +27,7 @@ const Job = () => {
         headers: myHeaders,
       };
 
-      let res = await fetch(
-        `http://localhost:3000/api/job/apply/${id}`,
-        reqBody
-      );
+      let res = await fetch(`/api/job/apply/${id}`, reqBody);
       const data = await res.json();
       if (data.success === false) {
         setError(true);
@@ -59,10 +56,7 @@ const Job = () => {
         method: "GET",
         headers: myHeaders,
       };
-      const res = await fetch(
-        `http://localhost:3000/api/job/listing/${params.id}`,
-        reqOptions
-      );
+      const res = await fetch(`/api/job/listing/${params.id}`, reqOptions);
       const data = await res.json();
       if (data.success === false) {
         setError(true);
