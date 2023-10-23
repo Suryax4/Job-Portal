@@ -1,18 +1,11 @@
-import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Header = () => {
-  const navigate = useNavigate();
   const logout = () => {
     sessionStorage.clear();
-    navigate("/");
   };
   const auth = sessionStorage.getItem("token");
   const user = sessionStorage.getItem("user");
-
-  useEffect(() => {
-    navigate("/");
-  }, [auth]);
 
   return (
     <header className="bg-slate-200 shadow-md">
@@ -31,7 +24,7 @@ const Header = () => {
           </Link>
 
           {auth ? (
-            <Link to="/" onClick={logout}>
+            <Link to="/signin" onClick={logout}>
               <li className=" text-slate-700 hover:underline">
                 {" "}
                 Logout ({user})

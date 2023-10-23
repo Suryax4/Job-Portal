@@ -5,7 +5,7 @@ import {
   getSingleJob,
   initializeJob,
 } from "../controllers/job.controller.js";
-import { authenticate } from "../middleware.js";
+import { authenticate } from "../utils/middleware.js";
 
 const router = express.Router();
 

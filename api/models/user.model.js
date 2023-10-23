@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  resumeUrl: { type: String },
   jobApplied: [
     {
       type: mongoose.Schema.Types.ObjectId,
