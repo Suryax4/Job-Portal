@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -7,6 +8,12 @@ const Header = () => {
     navigate("/");
   };
   const auth = sessionStorage.getItem("token");
+  const user = sessionStorage.getItem("user");
+
+  useEffect(() => {
+    navigate("/");
+  }, [auth]);
+
   return (
     <header className="bg-slate-200 shadow-md">
       <div className="flex justify-between items-center max-w-6xl mx-auto p-3">
@@ -25,11 +32,14 @@ const Header = () => {
 
           {auth ? (
             <Link to="/" onClick={logout}>
-              <li className=" text-slate-700 hover:underline"> Logout</li>
+              <li className=" text-slate-700 hover:underline">
+                {" "}
+                Logout ({user})
+              </li>
             </Link>
           ) : (
-            <Link to="/signup">
-              <li className=" text-slate-700 hover:underline"> Sign Up</li>
+            <Link to="/signin">
+              <li className=" text-slate-700 hover:underline"> Sign In</li>
             </Link>
           )}
         </ul>

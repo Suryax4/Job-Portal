@@ -5,26 +5,28 @@ const Home = () => {
   const [jobs, setJobs] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const auth = sessionStorage.getItem("token");
 
-  useEffect(() => {
-    const fetchListing = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`http://localhost:3000/api/job/listing`);
-        const data = await res.json();
-        if (data.success === false) {
-          setError(true);
-          setLoading(false);
-          return;
-        }
-        setJobs(data.jobs);
-        setLoading(false);
-        setError(false);
-      } catch (error) {
+  const fetchListing = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`http://localhost:3000/api/job/listing`);
+      const data = await res.json();
+      if (data.success === false) {
         setError(true);
         setLoading(false);
+        return;
       }
-    };
+      setJobs(data.jobs);
+      setLoading(false);
+      setError(false);
+    } catch (error) {
+      setError(true);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchListing();
   }, []);
 
@@ -46,11 +48,19 @@ const Home = () => {
                 {job.company} - {job.location}
               </p>
               <p className="mt-2">Salary: {job.salary}</p>
-              <Link to={`/job/${job._id}`}>
-                <button className="bg-indigo-600 text-white px-4 py-2 mt-4 hover:bg-indigo-700">
-                  Show Detail
-                </button>
-              </Link>
+              {auth ? (
+                <Link to={`/job/${job._id}`}>
+                  <button className="bg-indigo-600 text-white px-4 py-2 mt-4 hover:bg-indigo-700">
+                    Show More Details
+                  </button>
+                </Link>
+              ) : (
+                <Link to={`/signin`}>
+                  <button className="bg-indigo-600 text-white px-4 py-2 mt-4 hover:bg-indigo-700">
+                    Login to Show More Details
+                  </button>
+                </Link>
+              )}
             </div>
           ))}
         </div>

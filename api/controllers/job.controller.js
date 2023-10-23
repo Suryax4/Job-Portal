@@ -1,4 +1,6 @@
 import Job from "../models/job.model.js";
+import User from "../models/user.model.js";
+import mongoose from "mongoose";
 
 export const initializeJob = async (req, res) => {
   try {
@@ -126,12 +128,69 @@ export const getAvailableJob = async (req, res) => {
 
 export const getSingleJob = async (req, res) => {
   try {
+    const { userId } = req;
     const job = await Job.findById(req.params.id);
+    const userObjectId = new mongoose.mongo.ObjectId(userId);
+    const applied = job.appliedBy.includes(userObjectId);
+
     if (!job) {
       return res.status(404).json({ success: false, message: "Job not found" });
     }
-    res.status(200).json({ success: true, job });
+    res.status(200).json({ success: true, job, applied });
   } catch (error) {
     res.status(500).json({ success: false, message: "Failed to fetch Job" });
+  }
+};
+
+export const applyJob = async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req;
+
+  try {
+    const job = await Job.findById(id);
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    const user = await User.findById(userId);
+
+    const userObjectId = new mongoose.mongo.ObjectId(user._id);
+
+    if (job.appliedBy.includes(userObjectId)) {
+      return res
+        .status(240)
+        .json({ message: "User has already applied for the job" });
+    }
+
+    await Job.findByIdAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        $push: {
+          appliedBy: user._id,
+        },
+      },
+      { new: true }
+    );
+
+    await User.findByIdAndUpdate(
+      {
+        _id: userId,
+      },
+      {
+        $push: {
+          jobApplied: job._id,
+        },
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Job Applied successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to apply Job" });
   }
 };

@@ -15,6 +15,12 @@ const jobSchema = new mongoose.Schema({
   salary: String,
   postedDate: String,
   applicationDeadline: String,
+  appliedBy: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
 });
 
 // Create a JobListing model from the schema

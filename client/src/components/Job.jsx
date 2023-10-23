@@ -1,25 +1,77 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Job = () => {
   const params = useParams();
+  const navigate = useNavigate();
 
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [applied, setApplied] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const applyJob = async (id) => {
+    try {
+      if (selectedFile == null) {
+        alert("Please Select File");
+        return;
+      }
+      setLoading(true);
+      let myHeaders = new Headers();
+      let token = sessionStorage.getItem("token");
+
+      myHeaders.append("Authorization", `Bearer ${token}`);
+      const reqBody = {
+        method: "POST",
+        headers: myHeaders,
+      };
+
+      let res = await fetch(
+        `http://localhost:3000/api/job/apply/${id}`,
+        reqBody
+      );
+      const data = await res.json();
+      if (data.success === false) {
+        setError(true);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(false);
+      setError(false);
+      if (data.success === true) {
+        navigate("/");
+      }
+    } catch (err) {
+      setError(true);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchListing = async () => {
       try {
         setLoading(true);
+        let myHeaders = new Headers();
+        let token = sessionStorage.getItem("token");
+        myHeaders.append("Authorization", `Bearer ${token}`);
+        let reqOptions = {
+          method: "GET",
+          headers: myHeaders,
+        };
         const res = await fetch(
-          `http://localhost:3000/api/job/listing/${params.id}`
+          `http://localhost:3000/api/job/listing/${params.id}`,
+          reqOptions
         );
         const data = await res.json();
         if (data.success === false) {
           setError(true);
           setLoading(false);
           return;
+        }
+        if (data.applied == true) {
+          setApplied(true);
         }
         setJob(data.job);
         setLoading(false);
@@ -30,7 +82,7 @@ const Job = () => {
       }
     };
     fetchListing();
-  }, [params.id]);
+  }, []);
 
   return (
     <div>
@@ -65,12 +117,38 @@ const Job = () => {
               Posted on: {job.postedDate} | Application Deadline:{" "}
               {job.applicationDeadline}
             </p>
-            <button
-              className="bg-indigo-600 text-white px-4 py-2 hover:bg-indigo-700 focus:outline-none rounded-md transition-transform transform scale-100 hover:scale-105"
-              onClick={() => handleApply(job)}
-            >
-              Apply
-            </button>
+
+            {applied && (
+              <button
+                disabled={applied}
+                className="bg-indigo-600 text-white px-4 py-2 hover:bg-indigo-700 focus:outline-none rounded-md transition-transform transform scale-100 hover:scale-105"
+              >
+                Already Applied
+              </button>
+            )}
+            {!applied && (
+              <div>
+                <div>
+                  <input type="file" accept=".pdf,.doc,.docx" />
+                  {selectedFile && (
+                    <div>
+                      <p>Selected File: {selectedFile.name}</p>
+                      {console.log(selectedFile)}
+
+                      <p>
+                        File Size: {Math.round(selectedFile.size / 1024)} KB
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => applyJob(job._id)}
+                  className="bg-indigo-600 text-white px-4 py-2 hover:bg-indigo-700 focus:outline-none rounded-md transition-transform transform scale-100 hover:scale-105"
+                >
+                  Apply
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
