@@ -41,7 +41,7 @@ export default function SignIn() {
       }
       setLoading(false);
       setError(null);
-      toast.success(data.message);
+
       if (data.token) {
         sessionStorage.setItem("user", formData.email);
         sessionStorage.setItem("token", data?.token);
